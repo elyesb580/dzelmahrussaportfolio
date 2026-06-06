@@ -348,12 +348,66 @@
     });
 
     async function searchAnime(query) {
-      const url = `${BASE}/search?q=${encodeURIComponent(query)}`;
-      const html = await fetchWithProxy(url);
-      if (!html) {
-        searchResults.innerHTML = '<div class="search-result-item">❌ Erreur réseau ou proxy indisponible</div>';
-        searchResults.style.display = 'block';
+  // ---- Étape 1 : Tenter l'API de recherche officielle ----
+  const apiUrl = `${BASE}/api/v1/search?query=${encodeURIComponent(query)}`;
+  try {
+    const jsonText = await fetchWithProxy(apiUrl);
+    if (jsonText) {
+      const data = JSON.parse(jsonText);
+      if (data && data.data && data.data.length > 0) {
+        displaySearchResults(data.data.map(item => ({
+          title: item.title || item.name,
+          url: item.url || `${BASE}/catalogue/${item.slug}`
+        })));
         return;
+      }
+    }
+  } catch (e) {
+    console.warn('API search failed, trying HTML scraping...');
+  }
+
+  // ---- Étape 2 : Fallback – Scraper la page /search?q=... ----
+  const searchPageUrl = `${BASE}/search?q=${encodeURIComponent(query)}`;
+  const html = await fetchWithProxy(searchPageUrl);
+  if (!html) {
+    searchResults.innerHTML = '<div class="search-result-item">❌ Erreur réseau</div>';
+    searchResults.style.display = 'block';
+    return;
+  }
+
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const items = [];
+  doc.querySelectorAll('a[href*="/catalogue/"]').forEach(a => {
+    const href = a.getAttribute('href');
+    const title = a.textContent.trim();
+    if (href && title && !items.find(i => i.url === href)) {
+      items.push({ title, url: href.startsWith('http') ? href : BASE + href });
+    }
+  });
+
+  if (!items.length) {
+    searchResults.innerHTML = '<div class="search-result-item">Aucun résultat</div>';
+    searchResults.style.display = 'block';
+    return;
+  }
+
+  displaySearchResults(items);
+}
+
+// Nouvelle fonction utilitaire pour afficher les résultats (appelée par les deux méthodes)
+function displaySearchResults(items) {
+  searchResults.innerHTML = items.map(item =>
+    `<div class="search-result-item" data-url="${item.url}">${item.title}</div>`
+  ).join('');
+  document.querySelectorAll('.search-result-item').forEach(el => {
+    el.addEventListener('click', () => {
+      searchResults.style.display = 'none';
+      searchInput.value = el.textContent.trim();
+      loadAnime(el.dataset.url, el.textContent.trim());
+    });
+  });
+  searchResults.style.display = 'block';
+}
       }
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const items = [];
