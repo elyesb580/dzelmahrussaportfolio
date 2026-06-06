@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stream+ ⚡ | Muguwara Optimisé</title>
-  <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <style>
     :root {
@@ -29,119 +28,76 @@
       position: relative;
     }
     #particles-canvas {
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      z-index:0;
-      pointer-events:none;
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      z-index:0; pointer-events:none;
     }
     .app { position:relative; z-index:1; }
 
-    /* Header */
     header {
       backdrop-filter: blur(15px);
       background: rgba(5,5,15,0.7);
       padding: 15px 30px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      display: flex; align-items: center; gap: 20px;
+      position: sticky; top: 0; z-index: 100;
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .logo {
-      font-size: 2.2rem;
-      font-weight: 800;
+      font-size: 2.2rem; font-weight: 800;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       text-shadow: 0 0 15px rgba(0,210,255,0.3);
     }
     .nav-links { display:flex; gap:15px; }
     .nav-link {
-      color:var(--muted);
-      cursor:pointer;
-      padding:8px 15px;
-      border-radius:20px;
-      transition:0.2s;
-      user-select:none;
+      color:var(--muted); cursor:pointer; padding:8px 15px;
+      border-radius:20px; transition:0.2s; user-select:none;
     }
     .nav-link:hover, .nav-link.active { color:white; background: rgba(255,255,255,0.1); }
     .search-container { flex:1; position:relative; }
     #search-input {
-      width: 100%;
-      padding: 14px 25px;
+      width: 100%; padding: 14px 25px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 50px;
-      color: white;
-      font-size: 1rem;
-      backdrop-filter: blur(10px);
-      transition: 0.3s;
+      border-radius: 50px; color: white; font-size: 1rem;
+      backdrop-filter: blur(10px); transition: 0.3s;
     }
     #search-input:focus {
-      outline: none;
-      border-color: var(--primary);
+      outline: none; border-color: var(--primary);
       box-shadow: 0 0 25px var(--primary);
     }
     #search-results {
-      position: absolute;
-      top: 110%;
-      left:0; right:0;
-      background: #111;
-      border-radius: 15px;
-      overflow: hidden;
-      max-height: 300px;
-      overflow-y: auto;
-      display: none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      z-index:200;
+      position: absolute; top: 110%; left:0; right:0;
+      background: #111; border-radius: 15px; overflow: hidden;
+      max-height: 300px; overflow-y: auto; display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index:200;
     }
     .search-result-item {
-      padding: 12px 20px;
-      cursor: pointer;
-      border-bottom: 1px solid #222;
-      transition:0.2s;
+      padding: 12px 20px; cursor: pointer;
+      border-bottom: 1px solid #222; transition:0.2s;
     }
     .search-result-item:hover { background: var(--primary); color:black; }
 
-    /* Sections */
     main { padding: 25px; max-width:1400px; margin:0 auto; }
     .section-title {
-      font-size: 1.8rem;
-      margin: 30px 0 15px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color: var(--primary);
+      font-size: 1.8rem; margin: 30px 0 15px;
+      display:flex; align-items:center; gap:10px; color: var(--primary);
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 25px;
-      margin: 30px 0;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 25px; margin: 30px 0;
     }
     .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      background: var(--card-bg); backdrop-filter: blur(10px);
+      border-radius: 20px; padding: 20px; text-align: center;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
       border: 1px solid rgba(255,255,255,0.05);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     .card::before {
-      content: '';
-      position: absolute;
-      top:-50%; left:-50%;
+      content:''; position: absolute; top:-50%; left:-50%;
       width:200%; height:200%;
       background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-      transform: scale(0);
-      transition: transform 0.5s;
+      transform: scale(0); transition: transform 0.5s;
     }
     .card:hover::before { transform: scale(1); }
     .card:hover {
@@ -150,103 +106,68 @@
       border-color: var(--primary);
     }
     .card img {
-      width: 100%;
-      border-radius: 12px;
-      aspect-ratio: 2/3;
-      object-fit: cover;
-      background: #1a1a2e;
+      width: 100%; border-radius: 12px; aspect-ratio: 2/3;
+      object-fit: cover; background: #1a1a2e;
     }
     .card .title { margin-top:12px; font-weight:600; }
     .fav-btn {
-      position:absolute;
-      top:10px; right:10px;
-      background: rgba(0,0,0,0.5);
-      border:none; color:white;
-      font-size:1.5rem; cursor:pointer;
-      border-radius:50%; width:35px; height:35px;
-      display:flex; align-items:center; justify-content:center;
-      backdrop-filter:blur(5px);
-      z-index:5;
+      position:absolute; top:10px; right:10px;
+      background: rgba(0,0,0,0.5); border:none; color:white;
+      font-size:1.5rem; cursor:pointer; border-radius:50%;
+      width:35px; height:35px; display:flex; align-items:center;
+      justify-content:center; backdrop-filter:blur(5px); z-index:5;
     }
     .fav-btn:hover { background:var(--accent); }
 
-    /* Langues */
     .lang-buttons { display:flex; gap:10px; margin:20px 0; }
     .lang-btn {
-      padding:10px 25px;
-      border-radius:30px;
-      border:none;
-      cursor:pointer;
-      background: rgba(255,255,255,0.1);
-      color:white;
-      font-weight:600;
-      transition:0.2s;
+      padding:10px 25px; border-radius:30px; border:none; cursor:pointer;
+      background: rgba(255,255,255,0.1); color:white;
+      font-weight:600; transition:0.2s;
     }
     .lang-btn.active {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       box-shadow: 0 0 15px var(--primary);
     }
 
-    /* Lecteur */
     #player-overlay {
-      position: fixed;
-      inset:0;
-      background: rgba(0,0,0,0.95);
-      backdrop-filter: blur(10px);
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      z-index:999;
+      position: fixed; inset:0; background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(10px); display:flex; flex-direction:column;
+      justify-content:center; align-items:center; z-index:999;
       transition: opacity 0.3s;
     }
     #player-overlay.hidden { opacity:0; pointer-events:none; }
     .plyr--video {
-      width: 90%;
-      max-width: 900px;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 0 50px var(--primary);
+      width: 90%; max-width: 900px; border-radius: 20px;
+      overflow: hidden; box-shadow: 0 0 50px var(--primary);
     }
     .player-actions { margin-top: 25px; display:flex; gap:15px; flex-wrap:wrap; justify-content:center; }
     .btn {
-      padding:12px 25px;
-      border-radius:30px;
-      border:none;
-      font-weight:600;
-      cursor:pointer;
-      transition:0.3s;
-      background: rgba(255,255,255,0.1);
-      color:white;
+      padding:12px 25px; border-radius:30px; border:none;
+      font-weight:600; cursor:pointer; transition:0.3s;
+      background: rgba(255,255,255,0.1); color:white;
       backdrop-filter:blur(5px);
     }
     .btn:hover { transform: scale(1.05); }
     .btn-close { background: var(--accent); }
     .btn-download { background: var(--secondary); text-decoration:none; }
 
-    /* Utils */
     .hidden { display: none !important; }
     footer { text-align:center; padding:30px; color:var(--muted); border-top:1px solid rgba(255,255,255,0.1); margin-top:40px; }
 
-    /* Toast */
     #toast-container {
       position:fixed; bottom:20px; right:20px; z-index:9999;
       display:flex; flex-direction:column; gap:10px;
     }
     .toast {
-      background: rgba(0,210,255,0.2);
-      backdrop-filter: blur(10px);
-      padding:12px 20px;
-      border-radius:30px;
-      border:1px solid var(--primary);
-      color:white;
-      animation: slideIn 0.3s ease;
+      background: rgba(0,210,255,0.2); backdrop-filter: blur(10px);
+      padding:12px 20px; border-radius:30px; border:1px solid var(--primary);
+      color:white; animation: slideIn 0.3s ease;
     }
     @keyframes slideIn {
       from { transform:translateX(100%); opacity:0; }
       to { transform:translateX(0); opacity:1; }
     }
-    /* Progress bar */
     #progress-bar {
       position:fixed; top:0; left:0; height:3px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
@@ -312,16 +233,14 @@
     </div>
   </div>
 
-  <!-- Plyr JS -->
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   <script>
-    // ⚠️ Remplace cette URL par celle de ton proxy Render
-    const PROXY_URL = 'https://TON-PROXY.onrender.com/fetch?url=';
+    // ✅ URL de ton proxy Render (déjà configurée)
+    const PROXY_URL = 'https://muguwara-proxy.onrender.com/fetch?url=';
     
     const BASE = 'https://www.mugiwara-no-streaming.com';
     const IMG_BASE = 'https://raw.githubusercontent.com/NOUSSS/mugiwara-no-streaming-images/main/Animes/';
 
-    // ---- Éléments DOM ----
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const homeSection = document.getElementById('home-section');
@@ -350,13 +269,13 @@
     let currentView = 'home';
     let searchTimeout;
 
-    // Initialisation Plyr
+    // Init Plyr
     const plyr = new Plyr(videoPlayer, {
       controls: ['play-large','play','progress','current-time','mute','volume','fullscreen'],
       tooltips: { controls: true, seek: true }
     });
 
-    // ---- Utilitaires ----
+    // Utilitaires
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -378,7 +297,6 @@
       }
     }
 
-    // ---- Proxy Fetch ----
     async function fetchWithProxy(url) {
       showProgress(true);
       try {
@@ -392,7 +310,7 @@
       }
     }
 
-    // ---- Navigation ----
+    // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -421,7 +339,7 @@
       }
     }
 
-    // ---- Recherche ----
+    // Recherche
     searchInput.addEventListener('input', () => {
       clearTimeout(searchTimeout);
       const q = searchInput.value.trim();
@@ -464,7 +382,7 @@
       searchResults.style.display = 'block';
     }
 
-    // ---- Chargement d'un anime ----
+    // Chargement anime
     async function loadAnime(url, titleFallback) {
       switchView('anime');
       animeTitle.textContent = '⏳ Chargement...';
@@ -542,7 +460,7 @@
       });
     }
 
-    // ---- Lecture vidéo ----
+    // Lecture vidéo
     async function playEpisode(primaryUrl, fallbackUrls) {
       playerOverlay.classList.remove('hidden');
       plyr.source = { type: 'video', sources: [] };
@@ -575,7 +493,6 @@
           }
         }
       }
-      // Fallback
       if (fallbackUrls.length > 0) {
         window.open(fallbackUrls[0], '_blank');
         playerOverlay.classList.add('hidden');
@@ -592,10 +509,8 @@
 
     backBtn.addEventListener('click', () => switchView('home'));
 
-    // ---- Favoris ----
-    function getFavorites() {
-      return JSON.parse(localStorage.getItem('favorites') || '[]');
-    }
+    // Favoris
+    function getFavorites() { return JSON.parse(localStorage.getItem('favorites') || '[]'); }
     function addFavoriteEpisode(epUrl, epNum, anime) {
       const favs = getFavorites();
       if (!favs.find(f => f.url === epUrl)) {
@@ -608,9 +523,7 @@
       let favs = getFavorites().filter(f => f.url !== epUrl);
       localStorage.setItem('favorites', JSON.stringify(favs));
     }
-    function isFavoriteEpisode(epUrl) {
-      return getFavorites().some(f => f.url === epUrl);
-    }
+    function isFavoriteEpisode(epUrl) { return getFavorites().some(f => f.url === epUrl); }
     function toggleFavoriteEpisode(epUrl, epNum, anime) {
       if (isFavoriteEpisode(epUrl)) removeFavoriteEpisode(epUrl);
       else addFavoriteEpisode(epUrl, epNum, anime);
@@ -628,13 +541,10 @@
           <button class="fav-btn" onclick="event.stopPropagation(); toggleFavoriteEpisode('${f.url}',${f.epNum},{anime:'${f.animeTitle}',slug:'${f.animeSlug}'}); renderFavorites();">❤️</button>
         </div>
       `).join('');
-      // On pourrait ajouter un event listener pour ouvrir l'anime, mais il faut l'URL ; pour l'instant, simple affichage.
     }
 
-    // ---- Historique ----
-    function getHistory() {
-      return JSON.parse(localStorage.getItem('stream_history') || '[]');
-    }
+    // Historique
+    function getHistory() { return JSON.parse(localStorage.getItem('stream_history') || '[]'); }
     function addToHistory(title, url) {
       let history = getHistory().filter(h => h.url !== url);
       history.unshift({ title, url, date: Date.now() });
@@ -675,7 +585,7 @@
       });
     }
 
-    // ---- Particules ----
+    // Particules
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -720,12 +630,10 @@
     }
     animateParticles();
 
-    // Cacher les résultats si clic extérieur
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.search-container')) searchResults.style.display = 'none';
     });
 
-    // Init
     renderContinueWatching();
   </script>
 </body>
