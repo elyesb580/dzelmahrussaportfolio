@@ -3,9 +3,9 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// Remplace cette URL par l'URL exacte de ton site GitHub Pages
+// ⚠️ Remplace par l'URL exacte de ton site GitHub Pages
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://elyesb580.github.io");
+  res.header("Access-Control-Allow-Origin", "https://elyesb580.github.io/dzelmahrussaportfolio");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
