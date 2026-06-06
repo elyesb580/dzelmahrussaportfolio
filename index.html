@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stream+ ⚡ | Muguwara Optimisé</title>
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --primary: #00d2ff;
+      --secondary: #3a7bd5;
+      --accent: #ff006e;
+      --text: #e0e0e0;
+      --muted: #888;
+      --glow: 0 0 20px rgba(0,210,255,0.6);
+      --card-bg: rgba(15, 15, 25, 0.85);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0,210,255,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,0,110,0.05) 0%, transparent 50%);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      position: relative;
+    }
+    #particles-canvas {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      z-index:0;
+      pointer-events:none;
+    }
+    .app { position:relative; z-index:1; }
+
+    /* Header */
+    header {
+      backdrop-filter: blur(15px);
+      background: rgba(5,5,15,0.7);
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .logo {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0,210,255,0.3);
+    }
+    .nav-links { display:flex; gap:15px; }
+    .nav-link {
+      color:var(--muted);
+      cursor:pointer;
+      padding:8px 15px;
+      border-radius:20px;
+      transition:0.2s;
+      user-select:none;
+    }
+    .nav-link:hover, .nav-link.active { color:white; background: rgba(255,255,255,0.1); }
+    .search-container { flex:1; position:relative; }
+    #search-input {
+      width: 100%;
+      padding: 14px 25px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+    #search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 25px var(--primary);
+    }
+    #search-results {
+      position: absolute;
+      top: 110%;
+      left:0; right:0;
+      background: #111;
+      border-radius: 15px;
+      overflow: hidden;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index:200;
+    }
+    .search-result-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #222;
+      transition:0.2s;
+    }
+    .search-result-item:hover { background: var(--primary); color:black; }
+
+    /* Sections */
+    main { padding: 25px; max-width:1400px; margin:0 auto; }
+    .section-title {
+      font-size: 1.8rem;
+      margin: 30px 0 15px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: var(--primary);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 25px;
+      margin: 30px 0;
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top:-50%; left:-50%;
+      width:200%; height:200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+      transform: scale(0);
+      transition: transform 0.5s;
+    }
+    .card:hover::before { transform: scale(1); }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px var(--primary);
+      border-color: var(--primary);
+    }
+    .card img {
+      width: 100%;
+      border-radius: 12px;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      background: #1a1a2e;
+    }
+    .card .title { margin-top:12px; font-weight:600; }
+    .fav-btn {
+      position:absolute;
+      top:10px; right:10px;
+      background: rgba(0,0,0,0.5);
+      border:none; color:white;
+      font-size:1.5rem; cursor:pointer;
+      border-radius:50%; width:35px; height:35px;
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(5px);
+      z-index:5;
+    }
+    .fav-btn:hover { background:var(--accent); }
+
+    /* Langues */
+    .lang-buttons { display:flex; gap:10px; margin:20px 0; }
+    .lang-btn {
+      padding:10px 25px;
+      border-radius:30px;
+      border:none;
+      cursor:pointer;
+      background: rgba(255,255,255,0.1);
+      color:white;
+      font-weight:600;
+      transition:0.2s;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    /* Lecteur */
+    #player-overlay {
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(10px);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      z-index:999;
+      transition: opacity 0.3s;
+    }
+    #player-overlay.hidden { opacity:0; pointer-events:none; }
+    .plyr--video {
+      width: 90%;
+      max-width: 900px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 50px var(--primary);
+    }
+    .player-actions { margin-top: 25px; display:flex; gap:15px; flex-wrap:wrap; justify-content:center; }
+    .btn {
+      padding:12px 25px;
+      border-radius:30px;
+      border:none;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+      background: rgba(255,255,255,0.1);
+      color:white;
+      backdrop-filter:blur(5px);
+    }
+    .btn:hover { transform: scale(1.05); }
+    .btn-close { background: var(--accent); }
+    .btn-download { background: var(--secondary); text-decoration:none; }
+
+    /* Utils */
+    .hidden { display: none !important; }
+    footer { text-align:center; padding:30px; color:var(--muted); border-top:1px solid rgba(255,255,255,0.1); margin-top:40px; }
+
+    /* Toast */
+    #toast-container {
+      position:fixed; bottom:20px; right:20px; z-index:9999;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .toast {
+      background: rgba(0,210,255,0.2);
+      backdrop-filter: blur(10px);
+      padding:12px 20px;
+      border-radius:30px;
+      border:1px solid var(--primary);
+      color:white;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform:translateX(100%); opacity:0; }
+      to { transform:translateX(0); opacity:1; }
+    }
+    /* Progress bar */
+    #progress-bar {
+      position:fixed; top:0; left:0; height:3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      width:0%; z-index:9999; transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles-canvas"></canvas>
+  <div id="progress-bar"></div>
+  <div id="toast-container"></div>
+
+  <div class="app">
+    <header>
+      <div class="logo">⚡ Stream+</div>
+      <nav class="nav-links">
+        <span class="nav-link active" data-view="home">🏠 Accueil</span>
+        <span class="nav-link" data-view="favorites">⭐ Favoris</span>
+        <span class="nav-link" data-view="history-section">🕒 Historique</span>
+      </nav>
+      <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 Rechercher un anime...">
+        <div id="search-results"></div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <div id="home-section">
+        <div class="section-title">📺 Continuer à regarder</div>
+        <div id="continue-grid" class="grid">
+          <p style="grid-column:1/-1">🎈 Commence une recherche !</p>
+        </div>
+      </div>
+
+      <div id="anime-section" class="hidden">
+        <button id="back-btn" class="btn" style="background:#333;">← Retour</button>
+        <h2 id="anime-title" class="section-title"></h2>
+        <p id="anime-synopsis" style="color:var(--muted); margin-bottom:20px;"></p>
+        <div class="lang-buttons" id="lang-selector"></div>
+        <div id="episodes-container" class="grid"></div>
+      </div>
+
+      <div id="favorites-section" class="hidden">
+        <div class="section-title">⭐ Mes Favoris</div>
+        <div id="favorites-grid" class="grid"></div>
+      </div>
+
+      <div id="history-page-section" class="hidden">
+        <div class="section-title">🕒 Historique complet</div>
+        <div id="history-full-grid" class="grid"></div>
+      </div>
+    </main>
+
+    <footer>© 2025 Stream+ — Projet BTS SIO | Interface sans publicité</footer>
+  </div>
+
+  <div id="player-overlay" class="hidden">
+    <video id="player" controls crossorigin="anonymous"></video>
+    <div class="player-actions">
+      <button id="close-player" class="btn btn-close">✖ Fermer</button>
+      <a id="download-link" class="btn btn-download" download>⬇ Télécharger</a>
+      <button id="skip-intro-btn" class="btn" style="background:#6c63ff;">⏩ Skip intro (85s)</button>
+    </div>
+  </div>
+
+  <!-- Plyr JS -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script>
+    // ⚠️ Remplace cette URL par celle de ton proxy Render
+    const PROXY_URL = 'https://TON-PROXY.onrender.com/fetch?url=';
+    
+    const BASE = 'https://www.mugiwara-no-streaming.com';
+    const IMG_BASE = 'https://raw.githubusercontent.com/NOUSSS/mugiwara-no-streaming-images/main/Animes/';
+
+    // ---- Éléments DOM ----
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const homeSection = document.getElementById('home-section');
+    const animeSection = document.getElementById('anime-section');
+    const animeTitle = document.getElementById('anime-title');
+    const animeSynopsis = document.getElementById('anime-synopsis');
+    const langSelector = document.getElementById('lang-selector');
+    const episodesContainer = document.getElementById('episodes-container');
+    const continueGrid = document.getElementById('continue-grid');
+    const favoritesSection = document.getElementById('favorites-section');
+    const favoritesGrid = document.getElementById('favorites-grid');
+    const historyPageSection = document.getElementById('history-page-section');
+    const historyFullGrid = document.getElementById('history-full-grid');
+    const playerOverlay = document.getElementById('player-overlay');
+    const videoPlayer = document.getElementById('player');
+    const closePlayerBtn = document.getElementById('close-player');
+    const downloadLink = document.getElementById('download-link');
+    const backBtn = document.getElementById('back-btn');
+    const skipIntroBtn = document.getElementById('skip-intro-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const toastContainer = document.getElementById('toast-container');
+
+    let currentAnime = null;
+    let currentLang = 'vf';
+    let currentMp4 = null;
+    let currentView = 'home';
+    let searchTimeout;
+
+    // Initialisation Plyr
+    const plyr = new Plyr(videoPlayer, {
+      controls: ['play-large','play','progress','current-time','mute','volume','fullscreen'],
+      tooltips: { controls: true, seek: true }
+    });
+
+    // ---- Utilitaires ----
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showProgress(show) {
+      if (show) {
+        progressBar.style.width = '80%';
+        progressBar.style.opacity = '1';
+      } else {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+          progressBar.style.width = '0%';
+          progressBar.style.opacity = '0';
+        }, 200);
+      }
+    }
+
+    // ---- Proxy Fetch ----
+    async function fetchWithProxy(url) {
+      showProgress(true);
+      try {
+        const res = await fetch(PROXY_URL + encodeURIComponent(url));
+        if (!res.ok) return null;
+        return await res.text();
+      } catch (e) {
+        return null;
+      } finally {
+        showProgress(false);
+      }
+    }
+
+    // ---- Navigation ----
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        switchView(link.dataset.view);
+      });
+    });
+
+    function switchView(view) {
+      currentView = view;
+      homeSection.classList.add('hidden');
+      animeSection.classList.add('hidden');
+      favoritesSection.classList.add('hidden');
+      historyPageSection.classList.add('hidden');
+      if (view === 'home') {
+        homeSection.classList.remove('hidden');
+        renderContinueWatching();
+      } else if (view === 'favorites') {
+        favoritesSection.classList.remove('hidden');
+        renderFavorites();
+      } else if (view === 'history-section') {
+        historyPageSection.classList.remove('hidden');
+        renderFullHistory();
+      } else if (view === 'anime') {
+        animeSection.classList.remove('hidden');
+      }
+    }
+
+    // ---- Recherche ----
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      const q = searchInput.value.trim();
+      if (q.length < 2) { searchResults.style.display = 'none'; return; }
+      searchTimeout = setTimeout(() => searchAnime(q), 500);
+    });
+
+    async function searchAnime(query) {
+      const url = `${BASE}/search?q=${encodeURIComponent(query)}`;
+      const html = await fetchWithProxy(url);
+      if (!html) {
+        searchResults.innerHTML = '<div class="search-result-item">❌ Erreur réseau ou proxy indisponible</div>';
+        searchResults.style.display = 'block';
+        return;
+      }
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const items = [];
+      doc.querySelectorAll('a[href*="/catalogue/"]').forEach(a => {
+        const href = a.getAttribute('href');
+        const title = a.textContent.trim();
+        if (href && title && !items.find(i => i.url === href)) {
+          items.push({ title, url: href.startsWith('http') ? href : BASE + href });
+        }
+      });
+      if (!items.length) {
+        searchResults.innerHTML = '<div class="search-result-item">Aucun résultat</div>';
+        searchResults.style.display = 'block';
+        return;
+      }
+      searchResults.innerHTML = items.map(item =>
+        `<div class="search-result-item" data-url="${item.url}">${item.title}</div>`
+      ).join('');
+      document.querySelectorAll('.search-result-item').forEach(el => {
+        el.addEventListener('click', () => {
+          searchResults.style.display = 'none';
+          searchInput.value = el.textContent.trim();
+          loadAnime(el.dataset.url, el.textContent.trim());
+        });
+      });
+      searchResults.style.display = 'block';
+    }
+
+    // ---- Chargement d'un anime ----
+    async function loadAnime(url, titleFallback) {
+      switchView('anime');
+      animeTitle.textContent = '⏳ Chargement...';
+      animeSynopsis.textContent = '';
+      langSelector.innerHTML = '';
+      episodesContainer.innerHTML = '';
+
+      const html = await fetchWithProxy(url);
+      if (!html) { animeTitle.textContent = '❌ Erreur de chargement'; return; }
+      const match = html.match(/"animeServer":(\{.*?\}),"disponibles"/s);
+      if (!match) { animeTitle.textContent = '❌ Données introuvables'; return; }
+      currentAnime = JSON.parse(match[1]);
+      animeTitle.innerHTML = `🎬 ${currentAnime.anime || titleFallback}`;
+      animeSynopsis.textContent = currentAnime.synopsis || '';
+      showLangSelector();
+      addToHistory(currentAnime.anime || titleFallback, url);
+      showToast(`Chargement de ${currentAnime.anime || titleFallback}`);
+    }
+
+    function showLangSelector() {
+      langSelector.innerHTML = '';
+      const saisons = currentAnime.options?.saisons;
+      if (!saisons) return;
+      const langs = Object.keys(saisons[0]?.lang || {});
+      langs.forEach(lang => {
+        const btn = document.createElement('button');
+        btn.className = 'lang-btn' + (lang === currentLang ? ' active' : '');
+        btn.textContent = lang.toUpperCase();
+        btn.addEventListener('click', () => {
+          currentLang = lang;
+          document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderEpisodes();
+        });
+        langSelector.appendChild(btn);
+      });
+      renderEpisodes();
+    }
+
+    function renderEpisodes() {
+      episodesContainer.innerHTML = '';
+      const saisons = currentAnime.options?.saisons;
+      if (!saisons) return;
+      saisons.forEach(saison => {
+        const langData = saison.lang?.[currentLang];
+        if (!langData || !langData.length) return;
+        const mainServer = langData[0] || [];
+        const fallbackServers = langData.slice(1);
+        const imgPath = saison.image ? IMG_BASE + currentAnime.slug + '/' + saison.image : '';
+
+        mainServer.forEach((epUrl, idx) => {
+          const epNum = idx + 1;
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.position = 'relative';
+          const favBtn = document.createElement('button');
+          favBtn.className = 'fav-btn';
+          favBtn.innerHTML = isFavoriteEpisode(epUrl) ? '❤️' : '🤍';
+          favBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavoriteEpisode(epUrl, epNum, currentAnime);
+            favBtn.innerHTML = isFavoriteEpisode(epUrl) ? '❤️' : '🤍';
+          });
+          card.innerHTML = `
+            ${imgPath ? `<img src="${imgPath}" onerror="this.style.display='none'">` : '<div style="aspect-ratio:2/3; background:#333; display:flex; align-items:center; justify-content:center; font-size:3rem;">🎬</div>'}
+            <div class="title">Ép. ${epNum}</div>
+          `;
+          card.appendChild(favBtn);
+          card.addEventListener('click', () => {
+            const fallbacks = fallbackServers.map(s => s[idx]).filter(Boolean);
+            playEpisode(epUrl, fallbacks);
+          });
+          episodesContainer.appendChild(card);
+        });
+      });
+    }
+
+    // ---- Lecture vidéo ----
+    async function playEpisode(primaryUrl, fallbackUrls) {
+      playerOverlay.classList.remove('hidden');
+      plyr.source = { type: 'video', sources: [] };
+      currentMp4 = null;
+      downloadLink.style.display = 'none';
+      downloadLink.href = '#';
+
+      const urlObj = new URL(primaryUrl);
+      const videoid = urlObj.searchParams.get('videoid');
+      if (videoid) {
+        const shellUrl = `https://video.sibnet.ru/shell.php?videoid=${videoid}`;
+        const page = await fetchWithProxy(shellUrl);
+        if (page) {
+          const mp4Match = page.match(/file:\s*['"]([^'"]+\.mp4[^'"]*)['"]/);
+          if (mp4Match) {
+            let mp4 = mp4Match[1];
+            if (mp4.startsWith('/')) mp4 = 'https://video.sibnet.ru' + mp4;
+            currentMp4 = mp4;
+            plyr.source = { type: 'video', sources: [{ src: mp4, type: 'video/mp4' }] };
+            const savedTime = localStorage.getItem(`progress_${primaryUrl}`);
+            if (savedTime) videoPlayer.currentTime = parseFloat(savedTime);
+            videoPlayer.addEventListener('timeupdate', () => {
+              localStorage.setItem(`progress_${primaryUrl}`, videoPlayer.currentTime);
+            });
+            downloadLink.href = mp4;
+            downloadLink.style.display = 'inline-block';
+            plyr.play();
+            skipIntroBtn.onclick = () => { videoPlayer.currentTime = 85; };
+            return;
+          }
+        }
+      }
+      // Fallback
+      if (fallbackUrls.length > 0) {
+        window.open(fallbackUrls[0], '_blank');
+        playerOverlay.classList.add('hidden');
+      } else {
+        alert('😥 Aucun serveur disponible');
+        playerOverlay.classList.add('hidden');
+      }
+    }
+
+    closePlayerBtn.addEventListener('click', () => {
+      plyr.pause();
+      playerOverlay.classList.add('hidden');
+    });
+
+    backBtn.addEventListener('click', () => switchView('home'));
+
+    // ---- Favoris ----
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem('favorites') || '[]');
+    }
+    function addFavoriteEpisode(epUrl, epNum, anime) {
+      const favs = getFavorites();
+      if (!favs.find(f => f.url === epUrl)) {
+        favs.push({ url: epUrl, epNum, animeTitle: anime.anime, animeSlug: anime.slug });
+        localStorage.setItem('favorites', JSON.stringify(favs));
+        showToast('Ajouté aux favoris');
+      }
+    }
+    function removeFavoriteEpisode(epUrl) {
+      let favs = getFavorites().filter(f => f.url !== epUrl);
+      localStorage.setItem('favorites', JSON.stringify(favs));
+    }
+    function isFavoriteEpisode(epUrl) {
+      return getFavorites().some(f => f.url === epUrl);
+    }
+    function toggleFavoriteEpisode(epUrl, epNum, anime) {
+      if (isFavoriteEpisode(epUrl)) removeFavoriteEpisode(epUrl);
+      else addFavoriteEpisode(epUrl, epNum, anime);
+    }
+    function renderFavorites() {
+      const favs = getFavorites();
+      if (!favs.length) {
+        favoritesGrid.innerHTML = '<p style="grid-column:1/-1">Aucun favori pour le moment.</p>';
+        return;
+      }
+      favoritesGrid.innerHTML = favs.map(f => `
+        <div class="card" style="cursor:pointer;">
+          <div style="font-size:3rem;">🎬</div>
+          <div class="title">${f.animeTitle} - Ép.${f.epNum}</div>
+          <button class="fav-btn" onclick="event.stopPropagation(); toggleFavoriteEpisode('${f.url}',${f.epNum},{anime:'${f.animeTitle}',slug:'${f.animeSlug}'}); renderFavorites();">❤️</button>
+        </div>
+      `).join('');
+      // On pourrait ajouter un event listener pour ouvrir l'anime, mais il faut l'URL ; pour l'instant, simple affichage.
+    }
+
+    // ---- Historique ----
+    function getHistory() {
+      return JSON.parse(localStorage.getItem('stream_history') || '[]');
+    }
+    function addToHistory(title, url) {
+      let history = getHistory().filter(h => h.url !== url);
+      history.unshift({ title, url, date: Date.now() });
+      history = history.slice(0, 20);
+      localStorage.setItem('stream_history', JSON.stringify(history));
+      if (currentView === 'home') renderContinueWatching();
+    }
+    function renderContinueWatching() {
+      const history = getHistory();
+      if (!history.length) {
+        continueGrid.innerHTML = '<p style="grid-column:1/-1">🎈 Commence une recherche !</p>';
+        return;
+      }
+      continueGrid.innerHTML = history.slice(0,6).map(item => `
+        <div class="card" data-url="${item.url}">
+          <div style="font-size:3rem;">🎬</div>
+          <div class="title">${item.title}</div>
+        </div>
+      `).join('');
+      document.querySelectorAll('#continue-grid .card').forEach(card => {
+        card.addEventListener('click', () => loadAnime(card.dataset.url, card.querySelector('.title').textContent));
+      });
+    }
+    function renderFullHistory() {
+      const history = getHistory();
+      if (!history.length) {
+        historyFullGrid.innerHTML = '<p style="grid-column:1/-1">Historique vide.</p>';
+        return;
+      }
+      historyFullGrid.innerHTML = history.map(item => `
+        <div class="card" data-url="${item.url}">
+          <div style="font-size:3rem;">🎬</div>
+          <div class="title">${item.title}</div>
+        </div>
+      `).join('');
+      document.querySelectorAll('#history-full-grid .card').forEach(card => {
+        card.addEventListener('click', () => loadAnime(card.dataset.url, card.querySelector('.title').textContent));
+      });
+    }
+
+    // ---- Particules ----
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((canvas.width * canvas.height) / 15000);
+      for (let i=0; i<count; i++) particles.push(new Particle());
+    }
+    initParticles();
+    function animateParticles() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Cacher les résultats si clic extérieur
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) searchResults.style.display = 'none';
+    });
+
+    // Init
+    renderContinueWatching();
+  </script>
+</body>
+</html>
