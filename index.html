@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stream+ ⚡ | Muguwara Optimisé</title>
+  <title>⚡ Stream+ | Muguwara Optimisé</title>
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <style>
     :root {
@@ -13,15 +13,16 @@
       --accent: #ff006e;
       --text: #e0e0e0;
       --muted: #888;
-      --glow: 0 0 20px rgba(0,210,255,0.6);
+      --glow: 0 0 25px rgba(0,210,255,0.7);
       --card-bg: rgba(15, 15, 25, 0.85);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       background: var(--bg);
       background-image: 
-        radial-gradient(circle at 20% 30%, rgba(0,210,255,0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(255,0,110,0.05) 0%, transparent 50%);
+        radial-gradient(circle at 20% 30%, rgba(0,210,255,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,0,110,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(58,123,213,0.05) 0%, transparent 70%);
       color: var(--text);
       font-family: 'Inter', system-ui, sans-serif;
       min-height: 100vh;
@@ -35,7 +36,7 @@
 
     header {
       backdrop-filter: blur(15px);
-      background: rgba(5,5,15,0.7);
+      background: rgba(5,5,15,0.75);
       padding: 15px 30px;
       display: flex; align-items: center; gap: 20px;
       position: sticky; top: 0; z-index: 100;
@@ -53,7 +54,7 @@
       border-radius:20px; transition:0.2s; user-select:none;
     }
     .nav-link:hover, .nav-link.active { color:white; background: rgba(255,255,255,0.1); }
-    .search-container { flex:1; display:flex; gap:10px; align-items:center; }
+    .search-container { flex:1; display:flex; gap:10px; align-items:center; position:relative; }
     #search-input {
       flex:2; padding: 14px 25px;
       background: rgba(255,255,255,0.05);
@@ -177,7 +178,7 @@
       display:flex; flex-direction:column; gap:10px;
     }
     .toast {
-      background: rgba(0,210,255,0.2); backdrop-filter: blur(10px);
+      background: rgba(0,210,255,0.25); backdrop-filter: blur(10px);
       padding:12px 20px; border-radius:30px; border:1px solid var(--primary);
       color:white; animation: slideIn 0.3s ease;
     }
@@ -190,6 +191,67 @@
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       width:0%; z-index:9999; transition: width 0.3s;
     }
+
+    /* Chatbot */
+    #chatbot-container {
+      position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+    }
+    #chatbot-toggle {
+      width: 55px; height: 55px; border-radius: 50%;
+      background: var(--primary); border: none; color: black;
+      font-size: 1.8rem; cursor: pointer; box-shadow: 0 0 20px rgba(0,210,255,0.5);
+      transition: transform 0.2s;
+    }
+    #chatbot-toggle:hover { transform: scale(1.1); }
+    #chatbot-window {
+      position: absolute; bottom: 70px; right: 0;
+      width: 320px; height: 450px; background: #111; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      overflow: hidden;
+    }
+    #chatbot-window.hidden { display: none; }
+    .chatbot-header {
+      background: rgba(0,0,0,0.6); padding: 12px; display: flex;
+      justify-content: space-between; align-items: center;
+      backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #chatbot-close { background: none; border: none; color: white; cursor: pointer; }
+    #chatbot-messages {
+      flex: 1; padding: 12px; overflow-y: auto; display: flex;
+      flex-direction: column; gap: 10px;
+    }
+    .message {
+      max-width: 80%; padding: 10px 14px; border-radius: 18px;
+      word-break: break-word; animation: fadeInUp 0.3s ease;
+    }
+    .message.user { align-self: flex-end; background: var(--primary); color: black; }
+    .message.assistant { align-self: flex-start; background: #2a2a2a; }
+    .chatbot-input-area {
+      display: flex; padding: 10px; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    #chatbot-input {
+      flex: 1; padding: 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+    }
+    #chatbot-send {
+      border-radius: 50%; width: 40px; height: 40px;
+      background: var(--primary); border: none; color: black;
+      font-weight: bold; cursor: pointer;
+    }
+    @keyframes fadeInUp {
+      from { opacity:0; transform: translateY(10px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+    .search-spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -206,7 +268,7 @@
         <span class="nav-link" data-view="history-section">🕒 Historique</span>
       </nav>
       <div class="search-container" style="position:relative;">
-        <input type="text" id="search-input" placeholder="🔍 Rechercher un anime...">
+        <input type="text" id="search-input" placeholder="🔍 Rechercher (Entrée pour lancer)">
         <div id="search-results"></div>
       </div>
       <div style="display:flex; gap:10px; flex:1;">
@@ -219,7 +281,14 @@
       <div id="home-section">
         <div class="section-title">📺 Continuer à regarder</div>
         <div id="continue-grid" class="grid">
-          <p style="grid-column:1/-1">🎈 Commence une recherche ou colle une URL !</p>
+          <p style="grid-column:1/-1">🎈 Tape un anime et appuie sur Entrée !</p>
+        </div>
+        <div class="section-title">🔥 Suggestions</div>
+        <div class="grid" id="suggestions-grid">
+          <div class="card" data-query="Black Clover"><div style="font-size:3rem;">🍀</div><div class="title">Black Clover</div></div>
+          <div class="card" data-query="Oshi no Ko"><div style="font-size:3rem;">⭐</div><div class="title">Oshi no Ko</div></div>
+          <div class="card" data-query="One Piece"><div style="font-size:3rem;">🏴‍☠️</div><div class="title">One Piece</div></div>
+          <div class="card" data-query="Demon Slayer"><div style="font-size:3rem;">🗡️</div><div class="title">Demon Slayer</div></div>
         </div>
       </div>
 
@@ -254,14 +323,30 @@
     </div>
   </div>
 
+  <!-- Chatbot -->
+  <div id="chatbot-container">
+    <button id="chatbot-toggle">💬</button>
+    <div id="chatbot-window" class="hidden">
+      <div class="chatbot-header">
+        <span>🤖 Assistant Stream+</span>
+        <button id="chatbot-close">✖</button>
+      </div>
+      <div id="chatbot-messages"></div>
+      <div class="chatbot-input-area">
+        <input type="text" id="chatbot-input" placeholder="Parle avec l'IA...">
+        <button id="chatbot-send">➤</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   <script>
-    // ✅ URL de ton proxy Render (déjà configurée)
-    const PROXY_URL = 'https://muguwara-proxy.onrender.com/fetch?url=';
-    
+    // ==================== CONFIG ====================
+    const PROXY_BASE = 'https://muguwara-proxy.onrender.com'; // Base de ton proxy Render
     const BASE = 'https://www.mugiwara-no-streaming.com';
     const IMG_BASE = 'https://raw.githubusercontent.com/NOUSSS/mugiwara-no-streaming-images/main/Animes/';
 
+    // Éléments DOM
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const animeUrlInput = document.getElementById('anime-url');
@@ -290,15 +375,14 @@
     let currentLang = 'vf';
     let currentMp4 = null;
     let currentView = 'home';
-    let searchTimeout;
 
-    // Init Plyr
+    // Plyr
     const plyr = new Plyr(videoPlayer, {
       controls: ['play-large','play','progress','current-time','mute','volume','fullscreen'],
       tooltips: { controls: true, seek: true }
     });
 
-    // Utilitaires
+    // ==================== UTILITAIRES ====================
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -320,10 +404,11 @@
       }
     }
 
+    // Fonction pour appeler le proxy Render (fetch)
     async function fetchWithProxy(url) {
       showProgress(true);
       try {
-        const res = await fetch(PROXY_URL + encodeURIComponent(url));
+        const res = await fetch(`${PROXY_BASE}/fetch?url=${encodeURIComponent(url)}`);
         if (!res.ok) return null;
         return await res.text();
       } catch (e) {
@@ -333,7 +418,7 @@
       }
     }
 
-    // Navigation
+    // ==================== NAVIGATION ====================
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -362,122 +447,65 @@
       }
     }
 
-    // Recherche
-    searchInput.addEventListener('input', () => {
-      clearTimeout(searchTimeout);
-      const q = searchInput.value.trim();
-      if (q.length < 2) { searchResults.style.display = 'none'; return; }
-      searchTimeout = setTimeout(() => searchAnime(q), 500);
+    // ==================== RECHERCHE INTELLIGENTE (IA) ====================
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query.length >= 2) searchWithAI(query);
+      }
     });
 
-    // Nouvelle fonction de recherche améliorée
-    async function searchAnime(query) {
-      // 1) Tentative API (peut ne pas exister)
-      const apiUrl = `${BASE}/api/v1/search?query=${encodeURIComponent(query)}`;
-      try {
-        const jsonText = await fetchWithProxy(apiUrl);
-        if (jsonText) {
-          const data = JSON.parse(jsonText);
-          if (data && data.data && data.data.length > 0) {
-            displaySearchResults(data.data.map(item => ({
-              title: item.title || item.name,
-              url: item.url || `${BASE}/catalogue/${item.slug}`
-            })));
-            return;
-          }
-        }
-      } catch (e) { /* on continue */ }
-
-      // 2) Scraping de la page /search?q=...
-      const searchPageUrl = `${BASE}/search?q=${encodeURIComponent(query)}`;
-      const html = await fetchWithProxy(searchPageUrl);
-      if (!html) {
-        searchResults.innerHTML = '<div class="search-result-item">❌ Erreur réseau</div>';
-        searchResults.style.display = 'block';
-        return;
-      }
-
-      // Essayer d'extraire __NEXT_DATA__ (Next.js)
-      const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-      if (nextDataMatch) {
-        try {
-          const json = JSON.parse(nextDataMatch[1]);
-          const extracted = findAnimeInNextData(json);
-          if (extracted.length > 0) {
-            displaySearchResults(extracted);
-            return;
-          }
-        } catch (e) {}
-      }
-
-      // Fallback : liens HTML classiques
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const items = [];
-      doc.querySelectorAll('a[href*="/catalogue/"]').forEach(a => {
-        const href = a.getAttribute('href');
-        const title = a.textContent.trim();
-        if (href && title && !items.find(i => i.url === href)) {
-          items.push({ title, url: href.startsWith('http') ? href : BASE + href });
-        }
+    // Suggestions de la page d'accueil
+    document.querySelectorAll('#suggestions-grid .card').forEach(card => {
+      card.addEventListener('click', () => {
+        const query = card.dataset.query;
+        searchInput.value = query;
+        searchWithAI(query);
       });
+    });
 
-      if (items.length > 0) {
-        displaySearchResults(items);
-      } else {
-        searchResults.innerHTML = '<div class="search-result-item">Aucun résultat</div>';
-        searchResults.style.display = 'block';
-      }
-    }
-
-    // Recherche récursive dans __NEXT_DATA__
-    function findAnimeInNextData(obj, results = []) {
-      if (!obj || typeof obj !== 'object') return results;
-      if (Array.isArray(obj)) {
-        obj.forEach(item => findAnimeInNextData(item, results));
-      } else {
-        if (obj.animes || obj.items || obj.data || obj.results) {
-          const candidate = obj.animes || obj.items || obj.data || obj.results;
-          if (Array.isArray(candidate)) {
-            candidate.forEach(anime => {
-              if (anime.title || anime.name) {
-                results.push({
-                  title: anime.title || anime.name,
-                  url: anime.url || (anime.slug ? `${BASE}/catalogue/${anime.slug}` : null)
-                });
-              }
-            });
-          }
-        }
-        for (const key of Object.keys(obj)) {
-          if (['animes','items','data','results'].includes(key)) continue;
-          findAnimeInNextData(obj[key], results);
-        }
-      }
-      return results;
-    }
-
-    function displaySearchResults(items) {
-      searchResults.innerHTML = items.map(item =>
-        `<div class="search-result-item" data-url="${item.url}">${item.title}</div>`
-      ).join('');
-      document.querySelectorAll('.search-result-item').forEach(el => {
-        el.addEventListener('click', () => {
-          searchResults.style.display = 'none';
-          searchInput.value = el.textContent.trim();
-          loadAnime(el.dataset.url, el.textContent.trim());
-        });
-      });
+    async function searchWithAI(query) {
+      searchResults.innerHTML = '<div class="search-result-item"><span class="search-spinner"></span> 🤖 L\'IA cherche le bon lien…</div>';
       searchResults.style.display = 'block';
+      showProgress(true);
+
+      try {
+        const res = await fetch(`${PROXY_BASE}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Donne uniquement l'URL complète de la page des épisodes (saison 1) sur Muguwara-no-Streaming pour : "${query}". Exemple : https://www.mugiwara-no-streaming.com/catalogue/black-clover/episodes/saison1. Ne réponds rien d'autre que l'URL.`
+          })
+        });
+        const data = await res.json();
+        const reply = data.choices[0].message.content.trim();
+        const urlMatch = reply.match(/(https?:\/\/[^\s]+)/);
+        if (urlMatch) {
+          const foundUrl = urlMatch[0];
+          searchResults.innerHTML = `<div class="search-result-item" style="color:#0f0;">✅ Trouvé : ${foundUrl}</div>`;
+          // Charger automatiquement après 1s
+          setTimeout(() => {
+            searchResults.style.display = 'none';
+            loadAnime(foundUrl, query);
+          }, 800);
+        } else {
+          searchResults.innerHTML = '<div class="search-result-item">❌ L\'IA n\'a pas trouvé le lien.</div>';
+        }
+      } catch (err) {
+        searchResults.innerHTML = '<div class="search-result-item">❌ Erreur IA</div>';
+      } finally {
+        showProgress(false);
+      }
     }
 
-    // Charger depuis l'URL collée
+    // ==================== CHARGER UN ANIME (depuis URL) ====================
     loadUrlBtn.addEventListener('click', () => {
       const url = animeUrlInput.value.trim();
       if (!url) return showToast('Veuillez coller une URL');
       loadAnime(url);
     });
 
-    // Chargement anime
     async function loadAnime(url, titleFallback) {
       switchView('anime');
       animeTitle.textContent = '⏳ Chargement...';
@@ -494,7 +522,7 @@
       animeSynopsis.textContent = currentAnime.synopsis || '';
       showLangSelector();
       addToHistory(currentAnime.anime || titleFallback, url);
-      showToast(`Chargement de ${currentAnime.anime || titleFallback}`);
+      showToast(`✅ ${currentAnime.anime || titleFallback} chargé !`);
     }
 
     function showLangSelector() {
@@ -555,7 +583,7 @@
       });
     }
 
-    // Lecture vidéo
+    // ==================== LECTURE VIDÉO ====================
     async function playEpisode(primaryUrl, fallbackUrls) {
       playerOverlay.classList.remove('hidden');
       plyr.source = { type: 'video', sources: [] };
@@ -604,14 +632,14 @@
 
     backBtn.addEventListener('click', () => switchView('home'));
 
-    // Favoris
+    // ==================== FAVORIS ====================
     function getFavorites() { return JSON.parse(localStorage.getItem('favorites') || '[]'); }
     function addFavoriteEpisode(epUrl, epNum, anime) {
       const favs = getFavorites();
       if (!favs.find(f => f.url === epUrl)) {
         favs.push({ url: epUrl, epNum, animeTitle: anime.anime, animeSlug: anime.slug });
         localStorage.setItem('favorites', JSON.stringify(favs));
-        showToast('Ajouté aux favoris');
+        showToast('⭐ Ajouté aux favoris');
       }
     }
     function removeFavoriteEpisode(epUrl) {
@@ -626,11 +654,11 @@
     function renderFavorites() {
       const favs = getFavorites();
       if (!favs.length) {
-        favoritesGrid.innerHTML = '<p style="grid-column:1/-1">Aucun favori pour le moment.</p>';
+        favoritesGrid.innerHTML = '<p style="grid-column:1/-1">💔 Aucun favori</p>';
         return;
       }
       favoritesGrid.innerHTML = favs.map(f => `
-        <div class="card" style="cursor:pointer;">
+        <div class="card">
           <div style="font-size:3rem;">🎬</div>
           <div class="title">${f.animeTitle} - Ép.${f.epNum}</div>
           <button class="fav-btn" onclick="event.stopPropagation(); toggleFavoriteEpisode('${f.url}',${f.epNum},{anime:'${f.animeTitle}',slug:'${f.animeSlug}'}); renderFavorites();">❤️</button>
@@ -638,7 +666,7 @@
       `).join('');
     }
 
-    // Historique
+    // ==================== HISTORIQUE ====================
     function getHistory() { return JSON.parse(localStorage.getItem('stream_history') || '[]'); }
     function addToHistory(title, url) {
       let history = getHistory().filter(h => h.url !== url);
@@ -650,7 +678,7 @@
     function renderContinueWatching() {
       const history = getHistory();
       if (!history.length) {
-        continueGrid.innerHTML = '<p style="grid-column:1/-1">🎈 Commence une recherche ou colle une URL !</p>';
+        continueGrid.innerHTML = '<p style="grid-column:1/-1">🎈 Tape un anime et appuie sur Entrée !</p>';
         return;
       }
       continueGrid.innerHTML = history.slice(0,6).map(item => `
@@ -666,7 +694,7 @@
     function renderFullHistory() {
       const history = getHistory();
       if (!history.length) {
-        historyFullGrid.innerHTML = '<p style="grid-column:1/-1">Historique vide.</p>';
+        historyFullGrid.innerHTML = '<p style="grid-column:1/-1">📭 Historique vide</p>';
         return;
       }
       historyFullGrid.innerHTML = history.map(item => `
@@ -680,14 +708,78 @@
       });
     }
 
-    // Particules
+    // ==================== CHATBOT ====================
+    let conversationHistory = [
+      { role: "system", content: "Tu es un assistant utile, drôle et fan d'anime." }
+    ];
+
+    function addChatMessage(role, content, id = null) {
+      const messagesDiv = document.getElementById('chatbot-messages');
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+      if (id) div.id = id;
+      div.textContent = content;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatbot-input');
+      const text = input.value.trim();
+      if (!text) return;
+      addChatMessage('user', text);
+      input.value = '';
+      
+      conversationHistory.push({ role: "user", content: text });
+      const tempId = 'temp-' + Date.now();
+      addChatMessage('assistant', '...', tempId);
+
+      try {
+        const res = await fetch(`${PROXY_BASE}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: conversationHistory.slice(0, -1) })
+        });
+        const data = await res.json();
+        const reply = data.choices[0].message.content;
+        const tempEl = document.getElementById(tempId);
+        if (tempEl) { tempEl.textContent = reply; tempEl.id = ''; }
+        conversationHistory.push({ role: "assistant", content: reply });
+        randomAnimation();
+      } catch (err) {
+        const tempEl = document.getElementById(tempId);
+        if (tempEl) tempEl.textContent = '⚠️ Erreur réseau';
+      }
+    }
+
+    document.getElementById('chatbot-toggle').addEventListener('click', () => {
+      document.getElementById('chatbot-window').classList.toggle('hidden');
+    });
+    document.getElementById('chatbot-close').addEventListener('click', () => {
+      document.getElementById('chatbot-window').classList.add('hidden');
+    });
+    document.getElementById('chatbot-send').addEventListener('click', sendChatMessage);
+    document.getElementById('chatbot-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); sendChatMessage(); }
+    });
+
+    // ==================== ANIMATIONS ALÉATOIRES ====================
+    function randomAnimation() {
+      const anims = [
+        () => { for(let i=0;i<12;i++){ const s=document.createElement('span');s.textContent='✨';s.style.cssText=`position:fixed;top:-20px;left:${Math.random()*100}vw;font-size:${Math.random()*20+15}px;animation:fall ${Math.random()*2+1.5}s linear forwards;z-index:99999;pointer-events:none;`;document.body.appendChild(s);setTimeout(()=>s.remove(),3000); } },
+        () => { const f=document.createElement('div');f.style.cssText='position:fixed;inset:0;background:white;opacity:0.3;z-index:99999;pointer-events:none;transition:opacity 0.5s;';document.body.appendChild(f);requestAnimationFrame(()=>{f.style.opacity='0';setTimeout(()=>f.remove(),500);}); },
+        () => { const w=document.getElementById('chatbot-window');if(w){w.style.transform='translateX(5px)';setTimeout(()=>w.style.transform='translateX(-5px)',100);setTimeout(()=>w.style.transform='',200);} },
+        () => { for(let i=0;i<20;i++){const c=document.createElement('div');c.style.cssText=`position:fixed;top:-10px;left:${Math.random()*100}vw;width:8px;height:8px;background:hsl(${Math.random()*360},80%,60%);animation:confettiFall ${Math.random()*2+1.5}s linear forwards;z-index:99999;pointer-events:none;`;document.body.appendChild(c);setTimeout(()=>c.remove(),3000);} },
+        () => { document.body.style.transition='background 0.5s';document.body.style.background='linear-gradient(45deg, #ff006e, #00d2ff)';setTimeout(()=>{document.body.style.background='';},600); }
+      ];
+      anims[Math.floor(Math.random()*anims.length)]();
+    }
+
+    // ==================== PARTICULES ====================
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     class Particle {
@@ -699,23 +791,12 @@
         this.speedY = (Math.random() - 0.5) * 0.3;
         this.opacity = Math.random() * 0.5 + 0.1;
       }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-      }
-      draw() {
-        ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      update() { this.x += this.speedX; this.y += this.speedY; if(this.x<0||this.x>canvas.width)this.speedX*=-1; if(this.y<0||this.y>canvas.height)this.speedY*=-1; }
+      draw() { ctx.fillStyle = `rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
     }
     function initParticles() {
       particles = [];
-      const count = Math.floor((canvas.width * canvas.height) / 15000);
-      for (let i=0; i<count; i++) particles.push(new Particle());
+      for(let i=0;i<Math.floor((canvas.width*canvas.height)/15000);i++) particles.push(new Particle());
     }
     initParticles();
     function animateParticles() {
@@ -731,330 +812,5 @@
 
     renderContinueWatching();
   </script>
-  <!-- ==================== AMÉLIORATIONS RECHERCHE + CHATBOT IA ==================== -->
-<script>
-  (function() {
-    // ================== RECHERCHE : déclenchement par Entrée + indicateur ==================
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
-
-    // Supprimer l'ancien écouteur "input" (on le remplace)
-    // Pour cela on va réécrire proprement : on retire l'ancien et on met le nouveau.
-    // Comme on ne peut pas enlever un écouteur anonyme facilement, on va simplement
-    // vider le champ et remettre nos propres écouteurs. 
-    // Méthode simple : on clone le champ pour enlever tous les écouteurs.
-    const newSearchInput = searchInput.cloneNode(true);
-    searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-    // Réassigner la référence globale utilisée plus haut ? 
-    // Le code principal utilise la variable `searchInput`, on va la mettre à jour.
-    window.searchInput = newSearchInput; // pour que le reste du code voie le nouvel élément
-    const searchInputEl = newSearchInput;
-
-    let searchLoading = false;
-
-    // Fonction utilitaire pour lancer la recherche
-    async function performSearch() {
-      const query = searchInputEl.value.trim();
-      if (query.length < 2) {
-        searchResults.style.display = 'none';
-        return;
-      }
-      if (searchLoading) return; // une seule recherche à la fois
-      searchLoading = true;
-
-      // Afficher l'indicateur de chargement dans les résultats
-      searchResults.innerHTML = '<div class="search-result-item" style="display:flex;align-items:center;gap:10px;"><span class="search-spinner"></span> Recherche en cours…</div>';
-      searchResults.style.display = 'block';
-
-      try {
-        await searchAnime(query);  // appel à la fonction existante
-      } catch (e) {
-        searchResults.innerHTML = '<div class="search-result-item">❌ Erreur</div>';
-      } finally {
-        searchLoading = false;
-        // L'indicateur est automatiquement remplacé par les résultats (ou message "Aucun résultat") dans searchAnime
-      }
-    }
-
-    // Écouteur touche Entrée
-    searchInputEl.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        performSearch();
-      }
-    });
-
-    // Également permettre le clic sur un bouton "Rechercher" si tu veux, mais on garde Enter.
-
-    // Animation du spinner dans l'indicateur
-    const styleSpinner = document.createElement('style');
-    styleSpinner.textContent = `
-      .search-spinner {
-        display: inline-block;
-        width: 16px; height: 16px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top-color: #00d2ff;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-      }
-      @keyframes spin { to { transform: rotate(360deg); } }
-    `;
-    document.head.appendChild(styleSpinner);
-
-    // ================== CHATBOT IA ==================
-    const CHAT_API_KEY = 'sk-2f20437a2ae6408a9f46e506f3bc454c';
-    const CHAT_API_URL = 'https://api.deepseek.com/v1/chat/completions';  // DeepSeek (compatible OpenAI)
-    const CHAT_MODEL = 'deepseek-chat';  // modèle DeepSeek
-
-    // Création de l'interface du chatbot
-    const chatContainer = document.createElement('div');
-    chatContainer.id = 'chatbot-container';
-    chatContainer.innerHTML = `
-      <button id="chatbot-toggle">💬</button>
-      <div id="chatbot-window" class="hidden">
-        <div class="chatbot-header">
-          <span>🤖 Assistant Stream+</span>
-          <button id="chatbot-close">✖</button>
-        </div>
-        <div id="chatbot-messages"></div>
-        <div class="chatbot-input-area">
-          <input type="text" id="chatbot-input" placeholder="Pose une question...">
-          <button id="chatbot-send">➤</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(chatContainer);
-
-    // Styles pour le chatbot
-    const chatStyle = document.createElement('style');
-    chatStyle.textContent = `
-      #chatbot-container {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-      }
-      #chatbot-toggle {
-        width: 55px; height: 55px; border-radius: 50%;
-        background: var(--primary, #00d2ff); border: none; color: black;
-        font-size: 1.8rem; cursor: pointer; box-shadow: 0 0 20px rgba(0,210,255,0.5);
-        transition: transform 0.2s;
-      }
-      #chatbot-toggle:hover { transform: scale(1.1); }
-      #chatbot-window {
-        position: absolute; bottom: 70px; right: 0;
-        width: 320px; height: 450px; background: #111; border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        overflow: hidden;
-      }
-      #chatbot-window.hidden { display: none; }
-      .chatbot-header {
-        background: rgba(0,0,0,0.6); padding: 12px; display: flex;
-        justify-content: space-between; align-items: center;
-        backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1);
-      }
-      #chatbot-close { background: none; border: none; color: white; cursor: pointer; }
-      #chatbot-messages {
-        flex: 1; padding: 12px; overflow-y: auto; display: flex;
-        flex-direction: column; gap: 10px;
-      }
-      .message {
-        max-width: 80%; padding: 10px 14px; border-radius: 18px;
-        word-break: break-word; animation: fadeInUp 0.3s ease;
-      }
-      .message.user {
-        align-self: flex-end; background: var(--primary, #00d2ff);
-        color: black;
-      }
-      .message.assistant {
-        align-self: flex-start; background: #2a2a2a;
-      }
-      .chatbot-input-area {
-        display: flex; padding: 10px; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1);
-      }
-      #chatbot-input {
-        flex: 1; padding: 10px; border-radius: 20px;
-        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-        color: white;
-      }
-      #chatbot-send {
-        border-radius: 50%; width: 40px; height: 40px;
-        background: var(--primary, #00d2ff); border: none; color: black;
-        font-weight: bold; cursor: pointer;
-      }
-    `;
-    document.head.appendChild(chatStyle);
-
-    // Références
-    const toggleBtn = document.getElementById('chatbot-toggle');
-    const chatWindow = document.getElementById('chatbot-window');
-    const closeBtn = document.getElementById('chatbot-close');
-    const messagesDiv = document.getElementById('chatbot-messages');
-    const inputField = document.getElementById('chatbot-input');
-    const sendBtn = document.getElementById('chatbot-send');
-
-    // Toggle fenêtre
-    toggleBtn.addEventListener('click', () => {
-      chatWindow.classList.toggle('hidden');
-    });
-    closeBtn.addEventListener('click', () => {
-      chatWindow.classList.add('hidden');
-    });
-
-    // Historique conversation (gardé en mémoire)
-    let conversationHistory = [
-      { role: "system", content: "Tu es un assistant utile et drôle, fan d'anime et de streaming. Réponds de manière concise et sympathique." }
-    ];
-
-    // Envoyer message
-    async function sendMessage() {
-      const text = inputField.value.trim();
-      if (!text) return;
-      addMessage('user', text);
-      inputField.value = '';
-      
-      conversationHistory.push({ role: "user", content: text });
-
-      // Message temporaire "en cours d'écriture"
-      const tempMsgId = 'temp-' + Date.now();
-      addMessage('assistant', '...', tempMsgId);
-
-      try {
-        const response = await fetch(CHAT_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${CHAT_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: CHAT_MODEL,
-            messages: conversationHistory,
-            temperature: 0.7
-          })
-        });
-
-        if (!response.ok) throw new Error('API error');
-        const data = await response.json();
-        const reply = data.choices[0].message.content;
-        
-        // Remplacer le message temporaire
-        const tempEl = document.getElementById(tempMsgId);
-        if (tempEl) {
-          tempEl.textContent = reply;
-          tempEl.id = ''; // enlever l'id temporaire
-        }
-
-        conversationHistory.push({ role: "assistant", content: reply });
-
-        // Animation aléatoire
-        randomAnimation();
-      } catch (err) {
-        const tempEl = document.getElementById(tempMsgId);
-        if (tempEl) tempEl.textContent = '⚠️ Erreur réseau.';
-        console.error(err);
-      }
-
-      // Scroll en bas
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function addMessage(role, content, id = null) {
-      const div = document.createElement('div');
-      div.className = `message ${role}`;
-      if (id) div.id = id;
-      div.textContent = content;
-      messagesDiv.appendChild(div);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    // Événements envoi
-    sendBtn.addEventListener('click', sendMessage);
-    inputField.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    // ================== ANIMATIONS ALÉATOIRES ==================
-    function randomAnimation() {
-      const animations = [
-        () => { // pluie d'émojis ✨
-          for (let i = 0; i < 12; i++) {
-            const emoji = document.createElement('span');
-            emoji.textContent = '✨';
-            emoji.style.cssText = `
-              position: fixed; top: -20px; left: ${Math.random()*100}vw;
-              font-size: ${Math.random()*20+15}px;
-              animation: fall ${Math.random()*2+1.5}s linear forwards;
-              z-index: 99999; pointer-events: none;
-            `;
-            document.body.appendChild(emoji);
-            setTimeout(() => emoji.remove(), 3000);
-          }
-          // style pour la chute
-          if (!document.getElementById('anim-style')) {
-            const st = document.createElement('style');
-            st.id = 'anim-style';
-            st.textContent = '@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity:0; } }';
-            document.head.appendChild(st);
-          }
-        },
-        () => { // flash lumineux
-          const flash = document.createElement('div');
-          flash.style.cssText = `
-            position: fixed; inset: 0; background: white; opacity: 0.3;
-            z-index: 99999; pointer-events: none; transition: opacity 0.5s;
-          `;
-          document.body.appendChild(flash);
-          requestAnimationFrame(() => {
-            flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 500);
-          });
-        },
-        () => { // petite secousse du chatbot
-          const window = document.getElementById('chatbot-window');
-          if (window) {
-            window.style.transform = 'translateX(5px)';
-            setTimeout(() => { window.style.transform = 'translateX(-5px)'; }, 100);
-            setTimeout(() => { window.style.transform = 'translateX(0)'; }, 200);
-          }
-        },
-        () => { // confettis simples
-          for (let i=0; i<20; i++) {
-            const confetti = document.createElement('div');
-            const color = `hsl(${Math.random()*360}, 80%, 60%)`;
-            confetti.style.cssText = `
-              position: fixed; top: -10px; left: ${Math.random()*100}vw;
-              width: 8px; height: 8px; background: ${color};
-              animation: confettiFall ${Math.random()*2+1.5}s linear forwards;
-              z-index: 99999; pointer-events: none;
-            `;
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-          }
-          if (!document.getElementById('confetti-style')) {
-            const st = document.createElement('style');
-            st.id = 'confetti-style';
-            st.textContent = '@keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity:0; } }';
-            document.head.appendChild(st);
-          }
-        },
-        () => { // changer la couleur du fond pendant 1s
-          const origBg = document.body.style.background;
-          document.body.style.transition = 'background 0.5s';
-          document.body.style.background = 'linear-gradient(45deg, #ff006e, #00d2ff)';
-          setTimeout(() => {
-            document.body.style.background = origBg;
-          }, 600);
-        }
-      ];
-
-      // Choisir aléatoirement
-      const randomIndex = Math.floor(Math.random() * animations.length);
-      animations[randomIndex]();
-    }
-
-    // Nettoyage des styles d'animation (facultatif)
-  })();
-</script>
 </body>
 </html>
