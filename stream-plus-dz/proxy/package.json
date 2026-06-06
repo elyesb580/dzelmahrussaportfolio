@@ -1,7 +1,7 @@
 {
   "name": "muguwara-proxy",
   "version": "1.0.0",
-  "description": "Proxy pour Stream+",
+  "description": "Proxy CORS pour Stream+",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
