@@ -3,9 +3,8 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// Autorise ton frontend GitHub Pages (remplace par l'URL exacte de ton site)
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://elyesb580.github.io");
+  res.header("Access-Control-Allow-Origin", "https://elyesb580.github.io"); // Remplace par ton URL GitHub Pages
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
